@@ -70,9 +70,6 @@ function onScanSuccess(decodedText){
 
     scanInProgress = true;
 
-    // Stop further scanning
-    html5QrCode.stop();
-
     document.getElementById("status").innerHTML =
     "Processing " + decodedText + "...";
 
@@ -89,24 +86,18 @@ function onScanSuccess(decodedText){
         +"<br>"+data.message
         +"<br><br>Present Today : "+data.presentToday;
 
-        // Allow next scan
-        scanInProgress = false;
-
-        // Restart camera automatically after 2 seconds
-        setTimeout(function(){
-            startCamera();
-        },2000);
-
     })
     .catch(error => {
 
         document.getElementById("status").innerHTML =
         "Error connecting to server";
 
-        scanInProgress = false;
+    })
+    .finally(() => {
 
+        // Ignore any further scans for 2 seconds
         setTimeout(function(){
-            startCamera();
+            scanInProgress = false;
         },2000);
 
     });
@@ -114,10 +105,6 @@ function onScanSuccess(decodedText){
 }
 
 function startCamera(){
-
-    if(html5QrCode){
-        html5QrCode.clear().catch(()=>{});
-    }
 
     html5QrCode =
     new Html5Qrcode("camera");
