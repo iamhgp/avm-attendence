@@ -60,8 +60,18 @@ Waiting for scan...
 <script>
 
 let html5QrCode;
+let scanInProgress = false;
 
 function onScanSuccess(decodedText){
+
+    if(scanInProgress){
+        return;
+    }
+
+    scanInProgress = true;
+
+    // Stop further scanning
+    html5QrCode.stop();
 
     document.getElementById("status").innerHTML =
     "Processing " + decodedText + "...";
@@ -79,11 +89,25 @@ function onScanSuccess(decodedText){
         +"<br>"+data.message
         +"<br><br>Present Today : "+data.presentToday;
 
+        // Allow next scan
+        scanInProgress = false;
+
+        // Restart camera automatically after 2 seconds
+        setTimeout(function(){
+            startCamera();
+        },2000);
+
     })
     .catch(error => {
 
         document.getElementById("status").innerHTML =
         "Error connecting to server";
+
+        scanInProgress = false;
+
+        setTimeout(function(){
+            startCamera();
+        },2000);
 
     });
 
@@ -91,20 +115,24 @@ function onScanSuccess(decodedText){
 
 function startCamera(){
 
-html5QrCode =
-new Html5Qrcode("camera");
+    if(html5QrCode){
+        html5QrCode.clear().catch(()=>{});
+    }
 
-html5QrCode.start(
-{facingMode:"environment"},
-{
-fps:10,
-qrbox: {
-    width: 800,
-    height: 800    
-}
-},
-onScanSuccess
-);
+    html5QrCode =
+    new Html5Qrcode("camera");
+
+    html5QrCode.start(
+    {facingMode:"environment"},
+    {
+        fps:10,
+        qrbox:{
+            width:800,
+            height:800
+        }
+    },
+    onScanSuccess
+    );
 
 }
 
