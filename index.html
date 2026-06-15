@@ -3,13 +3,86 @@
 <html>
 <head>
 <title>AVM Attendance</title>
+
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+
+<style>
+
+body{
+    background:#f5f5f5;
+    font-family:Arial,sans-serif;
+    text-align:center;
+}
+
+h1{
+    color:#1d5ce2;
+}
+
+#camera{
+    width:90%;
+    max-width:500px;
+    aspect-ratio:1/1;
+    background:black;
+    margin:auto;
+    border-radius:20px;
+    overflow:hidden;
+}
+
+button{
+    margin-top:20px;
+    font-size:30px;
+    padding:20px;
+}
+
+#status{
+    margin-top:20px;
+    font-size:30px;
+}
+
+</style>
+
 </head>
 
 <body>
 
-<h1>AVM Attendance</h1>
+<h1>🎓 AVM Attendance</h1>
 
-<p>If you can see this page, GitHub Pages is working.</p>
+<div id="camera"></div>
+
+<button onclick="startCamera()">
+📷 Start Camera
+</button>
+
+<div id="status">
+Waiting for scan...
+</div>
+
+<script>
+
+function onScanSuccess(decodedText){
+
+    document.getElementById("status").innerHTML =
+    "Scanned : " + decodedText;
+
+}
+
+function startCamera(){
+
+const html5QrCode =
+new Html5Qrcode("camera");
+
+html5QrCode.start(
+{facingMode:"environment"},
+{
+fps:10,
+qrbox:250
+},
+onScanSuccess
+);
+
+}
+
+</script>
 
 </body>
 </html>
