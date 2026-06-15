@@ -1,7 +1,7 @@
-```html
 <!DOCTYPE html>
 <html>
 <head>
+
 <title>AVM Attendance</title>
 
 <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
@@ -59,16 +59,39 @@ Waiting for scan...
 
 <script>
 
+let html5QrCode;
+
 function onScanSuccess(decodedText){
 
     document.getElementById("status").innerHTML =
-    "Scanned : " + decodedText;
+    "Processing " + decodedText + "...";
+
+    fetch(
+    "https://script.google.com/macros/s/AKfycbyUhzg3uX1Mgafq9XBXjpEw89Ol_D4-5iJaV7UiKH8G1ymUAODeFpKEyYSD5RqekMUkQA/exec?studentID="
+    + encodeURIComponent(decodedText)
+    )
+    .then(response => response.json())
+    .then(data => {
+
+        document.getElementById("status").innerHTML =
+        "<h2>"+data.studentName+"</h2>"
+        +"<br>Status : "+data.status
+        +"<br>"+data.message
+        +"<br><br>Present Today : "+data.presentToday;
+
+    })
+    .catch(error => {
+
+        document.getElementById("status").innerHTML =
+        "Error connecting to server";
+
+    });
 
 }
 
 function startCamera(){
 
-const html5QrCode =
+html5QrCode =
 new Html5Qrcode("camera");
 
 html5QrCode.start(
@@ -86,4 +109,3 @@ onScanSuccess
 
 </body>
 </html>
-```
